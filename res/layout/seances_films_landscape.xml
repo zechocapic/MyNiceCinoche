@@ -5,7 +5,7 @@
     android:orientation="horizontal" >
     
     <fragment 
-        android:name="org.zechocapic.mynicecinoche.Film"
+        android:name="org.zechocapic.mynicecinoche.Seances"
         android:id="@+id/seances_fragment"
         android:layout_weight="1"
         android:layout_width="0dp"
