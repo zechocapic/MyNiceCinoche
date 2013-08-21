@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 public class Film extends Fragment {
-	static String Films[] = { "Film un", "Film deux"};
+	static String Films[] = { "Film un", "Film deux", "Film trois" };
 	final static String ARG_POSITION = "position";
 	int mCurrentPosition = -1;
 

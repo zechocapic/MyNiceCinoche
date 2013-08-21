@@ -4,12 +4,11 @@ import android.app.Activity;
 import android.app.ListFragment;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 public class Seances extends ListFragment {
 	OnSeanceSelectedListener mCallback;
-	static String[] Seances = { "Seance un", "Seance deux" };
+	static String[] Seances = { "Seance un", "Seance deux", "Seance trois" };
 	
 	public interface OnSeanceSelectedListener {
 		public void onFilmSelected(int position);
@@ -18,8 +17,9 @@ public class Seances extends ListFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		setListAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, Seances));
+		
+		setListAdapter(new SeanceArrayAdapter(getActivity(), Seances));
+		//setListAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, Seances));
 	}
 	
 	@Override

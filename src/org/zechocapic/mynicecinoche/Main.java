@@ -36,9 +36,12 @@ public class Main extends Activity implements Seances.OnSeanceSelectedListener {
 	public void onFilmSelected(int position) {
 		Film film = (Film) getFragmentManager().findFragmentById(R.id.film_fragment);
 		
+		// update film fragment in right part of the screen if in landscape mode
 		if (film != null) {
 			film.updateFilmView(position);
-		} else {
+		}
+		// launch film fragment as if it was an activity if in portrait mode 
+		else {
 			Film newFilm = new Film();
 			Bundle args = new Bundle();
 			args.putInt(Film.ARG_POSITION, position);
