@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 
-public class Main extends Activity implements Seances.OnSeanceSelectedListener {
+public class Main extends Activity implements SeancesListFragment.OnSeanceSelectedListener {
 	private final static boolean LANDSCAPE = true;
 
 	@Override
@@ -24,27 +24,28 @@ public class Main extends Activity implements Seances.OnSeanceSelectedListener {
 				return;
 			}
 			
-			Seances seances = new Seances();
-			seances.setArguments(getIntent().getExtras());
+			SeancesListFragment seancesListFragment = new SeancesListFragment();
+			seancesListFragment.setArguments(getIntent().getExtras());
 			
-			getFragmentManager().beginTransaction().add(R.id.fragment_container, seances).commit();
+			getFragmentManager().beginTransaction().add(R.id.fragment_container, seancesListFragment).commit();
 		}
 		
 	}
 
 	@Override
-	public void onFilmSelected(int position) {
-		Film film = (Film) getFragmentManager().findFragmentById(R.id.film_fragment);
-		
-		// update film fragment in right part of the screen if in landscape mode
-		if (film != null) {
-			film.updateFilmView(position);
+	public void onFilmSelected(int position, String tag) {
+		//check if film_fragment exists
+		FilmFragment filmFragment = (FilmFragment) getFragmentManager().findFragmentById(R.id.film_fragment);
+		if (filmFragment != null) {
+			// if it exists we re in landscape, so we update film fragment
+			filmFragment.updateFilmView(position, tag);
 		}
-		// launch film fragment as if it was an activity if in portrait mode 
+		// if it does not exist we re in portrait mode, so we replace the seances_listfragment by a film_fragment
 		else {
-			Film newFilm = new Film();
+			FilmFragment newFilm = new FilmFragment();
 			Bundle args = new Bundle();
-			args.putInt(Film.ARG_POSITION, position);
+			args.putInt(FilmFragment.ARG_POSITION, position);
+			args.putString(FilmFragment.ARG_URL, tag);
 			newFilm.setArguments(args);
 			
 			FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
@@ -55,7 +56,7 @@ public class Main extends Activity implements Seances.OnSeanceSelectedListener {
 		}
 		
 	}
-
+	
 	/*@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.

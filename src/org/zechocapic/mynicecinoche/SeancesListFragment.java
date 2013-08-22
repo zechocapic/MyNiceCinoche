@@ -6,20 +6,19 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
 
-public class Seances extends ListFragment {
+public class SeancesListFragment extends ListFragment {
 	OnSeanceSelectedListener mCallback;
 	static String[] Seances = { "Seance un", "Seance deux", "Seance trois" };
 	
 	public interface OnSeanceSelectedListener {
-		public void onFilmSelected(int position);
+		public void onFilmSelected(int position, String tag);
 	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		setListAdapter(new SeanceArrayAdapter(getActivity(), Seances));
-		//setListAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, Seances));
+		new RecupSeancesAsyncTask(this).execute("http://www.premiere.fr/horaire/cine/32619");
 	}
 	
 	@Override
@@ -44,7 +43,7 @@ public class Seances extends ListFragment {
 
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
-		mCallback.onFilmSelected(position);
+		mCallback.onFilmSelected(position, (String) v.getTag());
 		getListView().setItemChecked(position, true);
 	}
 
