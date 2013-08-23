@@ -5,30 +5,11 @@
     android:layout_height="match_parent"
     >
     
-    <LinearLayout android:layout_width="match_parent"
+    <LinearLayout 
+        android:id="@+id/layout_film"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical" >
-        
-        <TextView
-            android:id="@+id/film_titre"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:text="Titre du film" />
-        
-        <TextView
-            android:id="@+id/film_infos_diverses"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:text="Infos diverses sur le film" />
-        
-        <TextView
-            android:id="@+id/film_synopsis"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:text="Synopsis du film" />
     </LinearLayout>
+    
 </ScrollView>

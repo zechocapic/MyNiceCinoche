@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 
-public class Main extends Activity implements SeancesListFragment.OnSeanceSelectedListener {
+public class Main extends Activity implements SeancesFragment.OnFilmSelectedListener {
 	private final static boolean LANDSCAPE = true;
 
 	@Override
@@ -20,19 +20,39 @@ public class Main extends Activity implements SeancesListFragment.OnSeanceSelect
 		
 		// check activity layout and act accordingly
 		if (findViewById(R.id.fragment_container) != null) {
-			if (savedInstanceState != null) {
-				return;
-			}
+			SeancesFragment seancesFragment = new SeancesFragment();
+			seancesFragment.setArguments(getIntent().getExtras());
 			
-			SeancesListFragment seancesListFragment = new SeancesListFragment();
-			seancesListFragment.setArguments(getIntent().getExtras());
-			
-			getFragmentManager().beginTransaction().add(R.id.fragment_container, seancesListFragment).commit();
+			getFragmentManager().beginTransaction().add(R.id.fragment_container, seancesFragment).commit();
 		}
 		
 	}
 
 	@Override
+	public void onSeancesFilmSelected(String link) {
+		//check if film_fragment exists
+		FilmFragment filmFragment = (FilmFragment) getFragmentManager().findFragmentById(R.id.film_fragment);
+		if (filmFragment != null) {
+			// if it exists we re in landscape, so we update film fragment
+			filmFragment.updateFilmView(link);
+		}
+		// if it does not exist we re in portrait mode, so we replace the seances_listfragment by a film_fragment
+		else {
+			FilmFragment newFilm = new FilmFragment();
+			Bundle args = new Bundle();
+			args.putString(FilmFragment.ARG_URL, link);
+			newFilm.setArguments(args);
+			
+			FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+			fragmentTransaction.replace(R.id.fragment_container, newFilm);
+			fragmentTransaction.addToBackStack(null);
+			
+			fragmentTransaction.commit();
+		}
+		
+	}
+
+	/*@Override
 	public void onFilmSelected(int position, String tag) {
 		//check if film_fragment exists
 		FilmFragment filmFragment = (FilmFragment) getFragmentManager().findFragmentById(R.id.film_fragment);
@@ -55,7 +75,7 @@ public class Main extends Activity implements SeancesListFragment.OnSeanceSelect
 			fragmentTransaction.commit();
 		}
 		
-	}
+	}*/
 	
 	/*@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
