@@ -7,7 +7,7 @@
     
     <fragment 
         android:name="org.zechocapic.mynicecinoche.SeancesFragment"
-        android:id="@+id/seances_listfragment"
+        android:id="@+id/seances_fragment"
         android:layout_weight="1"
         android:layout_width="0dp"
         android:layout_height="match_parent"

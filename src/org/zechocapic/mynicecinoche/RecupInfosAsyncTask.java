@@ -69,7 +69,7 @@ public class RecupInfosAsyncTask extends AsyncTask<String, Void, Document>{
         	simpleTextSize = 14;
         	titleBackgroundColor = Color.rgb(47, 55, 64);
         	subtitleBackgroundColor = Color.rgb(192, 192, 192);
-        	simpleBackgroundColor = Color.WHITE;
+        	simpleBackgroundColor = Color.rgb(224, 224, 224);
         	titleTextColor = Color.WHITE;
         	subtitleTextColor = Color.BLACK;
         	simpleTextColor = Color.BLACK;
@@ -87,6 +87,8 @@ public class RecupInfosAsyncTask extends AsyncTask<String, Void, Document>{
         
 		// Bloc du film
         LinearLayout linearLayout = (LinearLayout) filmFragment.getActivity().findViewById(R.id.layout_film);
+        linearLayout.setBackgroundColor(Color.WHITE);
+        linearLayout.setPadding(5, 5, 5, 5);
         linearLayout.removeAllViews();
         
         // TextView du titre

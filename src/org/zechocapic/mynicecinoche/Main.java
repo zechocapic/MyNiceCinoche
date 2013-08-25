@@ -2,10 +2,11 @@ package org.zechocapic.mynicecinoche;
 
 import android.app.Activity;
 import android.app.FragmentTransaction;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 
 public class Main extends Activity implements SeancesFragment.OnFilmSelectedListener {
-	private final static boolean LANDSCAPE = true;
+	private final static boolean LANDSCAPE = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -13,9 +14,11 @@ public class Main extends Activity implements SeancesFragment.OnFilmSelectedList
 		
 		// choice of orientation
 		if (LANDSCAPE) {
-			setContentView(R.layout.seances_films_landscape);
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+			setContentView(R.layout.main_activity_landscape);
 		} else {
-			setContentView(R.layout.seances_films_portrait);
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+			setContentView(R.layout.main_activity_portrait);
 		}
 		
 		// check activity layout and act accordingly
@@ -29,7 +32,7 @@ public class Main extends Activity implements SeancesFragment.OnFilmSelectedList
 	}
 
 	@Override
-	public void onSeancesFilmSelected(String link) {
+	public void onFilmSelected(String link) {
 		//check if film_fragment exists
 		FilmFragment filmFragment = (FilmFragment) getFragmentManager().findFragmentById(R.id.film_fragment);
 		if (filmFragment != null) {
@@ -44,6 +47,7 @@ public class Main extends Activity implements SeancesFragment.OnFilmSelectedList
 			newFilm.setArguments(args);
 			
 			FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+			fragmentTransaction.setCustomAnimations(R.animator.slide_in_from_right, R.animator.slide_out_to_left);
 			fragmentTransaction.replace(R.id.fragment_container, newFilm);
 			fragmentTransaction.addToBackStack(null);
 			
@@ -51,37 +55,5 @@ public class Main extends Activity implements SeancesFragment.OnFilmSelectedList
 		}
 		
 	}
-
-	/*@Override
-	public void onFilmSelected(int position, String tag) {
-		//check if film_fragment exists
-		FilmFragment filmFragment = (FilmFragment) getFragmentManager().findFragmentById(R.id.film_fragment);
-		if (filmFragment != null) {
-			// if it exists we re in landscape, so we update film fragment
-			filmFragment.updateFilmView(position, tag);
-		}
-		// if it does not exist we re in portrait mode, so we replace the seances_listfragment by a film_fragment
-		else {
-			FilmFragment newFilm = new FilmFragment();
-			Bundle args = new Bundle();
-			args.putInt(FilmFragment.ARG_POSITION, position);
-			args.putString(FilmFragment.ARG_URL, tag);
-			newFilm.setArguments(args);
-			
-			FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-			fragmentTransaction.replace(R.id.fragment_container, newFilm);
-			fragmentTransaction.addToBackStack(null);
-			
-			fragmentTransaction.commit();
-		}
-		
-	}*/
-	
-	/*@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
-	}*/
 
 }

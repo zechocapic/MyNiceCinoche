@@ -8,6 +8,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import android.app.ProgressDialog;
+import android.content.Context;
+//import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
@@ -22,6 +24,8 @@ import android.widget.Toast;
 public class RecupSeancesAsyncTask extends AsyncTask<String, Void, Document>{
 	private SeancesFragment seancesFragment;
 	private ProgressDialog progressDialog;
+	private View inflatedView;
+	private Context context;
 	private LinearLayout.OnClickListener onClickListener = new LinearLayout.OnClickListener() {
 		public void onClick(View v) {
 			String url = (String) v.getTag();
@@ -29,14 +33,16 @@ public class RecupSeancesAsyncTask extends AsyncTask<String, Void, Document>{
 		}
 	};
 
-	public RecupSeancesAsyncTask(SeancesFragment seancesFragment) {
+	public RecupSeancesAsyncTask(SeancesFragment seancesFragment, View inflatedView, Context context) {
 		this.seancesFragment = seancesFragment;
+		this.inflatedView = inflatedView;
+		this.context = context;
 	}
-
+	
     // Lancement de la fenetre de progression
 	@Override
 	protected void onPreExecute() {
-    	this.progressDialog = new ProgressDialog(seancesFragment.getActivity());
+    	this.progressDialog = new ProgressDialog(context);
     	this.progressDialog.setMessage("Liste des séances en cours de récupération");
     	this.progressDialog.show();
 	}
@@ -63,7 +69,7 @@ public class RecupSeancesAsyncTask extends AsyncTask<String, Void, Document>{
 		
 		// Toast pour gerer les cas ou la connexion est en carton
         if(doc == null){
-        	Toast.makeText(seancesFragment.getActivity(), "Erreur : le chargement de la page n'aboutit pas !", Toast.LENGTH_SHORT).show();
+        	Toast.makeText(context, "Erreur : le chargement de la page n'aboutit pas !", Toast.LENGTH_SHORT).show();
             return;
         }
         
@@ -80,7 +86,7 @@ public class RecupSeancesAsyncTask extends AsyncTask<String, Void, Document>{
         	simpleTextSize = 14;
         	titleBackgroundColor = Color.rgb(47, 55, 64);
         	subtitleBackgroundColor = Color.rgb(192, 192, 192);
-        	simpleBackgroundColor = Color.WHITE;
+        	simpleBackgroundColor = Color.rgb(224, 224, 224);
         	titleTextColor = Color.WHITE;
         	subtitleTextColor = Color.BLACK;
         	simpleTextColor = Color.BLACK;
@@ -97,22 +103,24 @@ public class RecupSeancesAsyncTask extends AsyncTask<String, Void, Document>{
         }
 
 		// Layout de la page
-        LinearLayout layoutListeSeances = (LinearLayout) seancesFragment.getActivity().findViewById(R.id.layout_liste_seances);
+        LinearLayout layoutListeSeances = (LinearLayout) inflatedView.findViewById(R.id.layout_liste_seances);
+        layoutListeSeances.setBackgroundColor(Color.WHITE);
         layoutListeSeances.removeAllViews();
 		
         Elements blocs = doc.select("div.bloc_salles_bloc");
         
 		for (Element bloc : blocs) {
 			// Layout pour chaque film
-			LinearLayout layoutBloc = new LinearLayout(seancesFragment.getActivity());
+			LinearLayout layoutBloc = new LinearLayout(context);
 			layoutBloc.setOrientation(LinearLayout.VERTICAL);
 			layoutBloc.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+			layoutBloc.setPadding(5, 5, 5, 5);
 			layoutBloc.setOnClickListener(onClickListener);
 			layoutBloc.setTag(bloc.select("div.titre").first().select("a[href]").first().attr("href"));
 			
 			// Titre du film
 			Element titre = bloc.select("div.titre").first(); 
-            TextView twTitre = new TextView(seancesFragment.getActivity());
+            TextView twTitre = new TextView(context);
             twTitre.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
             twTitre.setTextSize(titleTextSize);
             twTitre.setTypeface(null, Typeface.BOLD);
@@ -124,14 +132,14 @@ public class RecupSeancesAsyncTask extends AsyncTask<String, Void, Document>{
 			// Seances du film
 			Elements seances = bloc.select("ul.cine-seances li");
 			for (Element seance : seances) {
-    			LinearLayout layoutSeances = new LinearLayout(seancesFragment.getActivity());            			
+    			LinearLayout layoutSeances = new LinearLayout(context);            			
     			layoutSeances.setOrientation(LinearLayout.HORIZONTAL);
     			layoutSeances.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
     			layoutSeances.setBackgroundColor(Color.BLACK);
 				
 				// Version du film
     			Element version = seance.select("span.cine-version").first();
-				TextView twVersion = new TextView(seancesFragment.getActivity());
+				TextView twVersion = new TextView(context);
 				twVersion.setLayoutParams(new LinearLayout.LayoutParams(100, LayoutParams.MATCH_PARENT, 0f));
 				twVersion.setTextSize(subtitleTextSize);
 				twVersion.setWidth(100);
@@ -143,7 +151,7 @@ public class RecupSeancesAsyncTask extends AsyncTask<String, Void, Document>{
                 
                 // Horaire du film
 				Element horaire = seance.select("span.cine-horaires").first();
-                TextView twHoraire = new TextView(seancesFragment.getActivity());
+                TextView twHoraire = new TextView(context);
 				twHoraire.setLayoutParams(new LinearLayout.LayoutParams(0, LayoutParams.MATCH_PARENT, 1f));
 				twHoraire.setTextSize(simpleTextSize);
                 twHoraire.setTextColor(simpleTextColor);
@@ -157,13 +165,13 @@ public class RecupSeancesAsyncTask extends AsyncTask<String, Void, Document>{
 			
 			// Notes du film
 			Elements notes = bloc.select("li.infos_notes span"); 
-			LinearLayout layoutNotes = new LinearLayout(seancesFragment.getActivity());            			
+			LinearLayout layoutNotes = new LinearLayout(context);            			
 			layoutNotes.setOrientation(LinearLayout.HORIZONTAL);
 			layoutNotes.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 			layoutNotes.setBackgroundColor(Color.BLACK);
 			
 			// TextView notePresse
-            TextView twNotePresse = new TextView(seancesFragment.getActivity());
+            TextView twNotePresse = new TextView(context);
             twNotePresse.setLayoutParams(new LinearLayout.LayoutParams(0, LayoutParams.MATCH_PARENT, 1f));
             twNotePresse.setTypeface(null, Typeface.BOLD);
             twNotePresse.setBackgroundColor(subtitleBackgroundColor);
@@ -172,12 +180,12 @@ public class RecupSeancesAsyncTask extends AsyncTask<String, Void, Document>{
             twNotePresse.setText("Presse ");
             
             // ImageView notePresse
-            ImageView imNotePresse = new ImageView(seancesFragment.getActivity());
+            ImageView imNotePresse = new ImageView(context);
             imNotePresse.setLayoutParams(new LinearLayout.LayoutParams(0, LayoutParams.MATCH_PARENT, 1f));
             imNotePresse.setBackgroundColor(simpleBackgroundColor);
             
             // TextView noteSpectateurs
-            TextView twNoteSpectateurs = new TextView(seancesFragment.getActivity());
+            TextView twNoteSpectateurs = new TextView(context);
             twNoteSpectateurs.setLayoutParams(new LinearLayout.LayoutParams(0, LayoutParams.MATCH_PARENT, 1f));
             twNoteSpectateurs.setTypeface(null, Typeface.BOLD);
             twNoteSpectateurs.setBackgroundColor(subtitleBackgroundColor);
@@ -186,7 +194,7 @@ public class RecupSeancesAsyncTask extends AsyncTask<String, Void, Document>{
             twNoteSpectateurs.setText("Spectateurs ");
             
             // ImageView noteSectateurs
-            ImageView imNoteSpectateurs = new ImageView(seancesFragment.getActivity());
+            ImageView imNoteSpectateurs = new ImageView(context);
             imNoteSpectateurs.setLayoutParams(new LinearLayout.LayoutParams(0, LayoutParams.MATCH_PARENT, 1f));
             imNoteSpectateurs.setBackgroundColor(simpleBackgroundColor);
             
