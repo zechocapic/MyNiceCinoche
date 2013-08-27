@@ -13,6 +13,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
@@ -39,7 +40,7 @@ public class RecupSeancesAsyncTask extends AsyncTask<String, Void, Document>{
 		this.context = context;
 	}
 	
-    // Lancement de la fenetre de progression
+    // launching progress dialog
 	@Override
 	protected void onPreExecute() {
     	this.progressDialog = new ProgressDialog(context);
@@ -47,7 +48,7 @@ public class RecupSeancesAsyncTask extends AsyncTask<String, Void, Document>{
     	this.progressDialog.show();
 	}
     
-    // Recuperation de la page web
+    // downloading web page
 	@Override
 	protected Document doInBackground(String... urls) {
 		Document document = null;
@@ -61,24 +62,24 @@ public class RecupSeancesAsyncTask extends AsyncTask<String, Void, Document>{
 		}
 	}
 
-    // Parsing de la page web
+    // parsing web page and drawing the result
 	@Override
     protected void onPostExecute(Document doc) {
-		// Fermeture de la fenetre de chargement
+		// closing progress dialog
 		progressDialog.dismiss();
 		
-		// Toast pour gerer les cas ou la connexion est en carton
+		// toast to manage failed connection
         if(doc == null){
         	Toast.makeText(context, "Erreur : le chargement de la page n'aboutit pas !", Toast.LENGTH_SHORT).show();
             return;
         }
         
-        // Variables de style
+        // style variables
         int titleTextSize, subtitleTextSize, simpleTextSize;
         int titleBackgroundColor, subtitleBackgroundColor, simpleBackgroundColor;
         int titleTextColor, subtitleTextColor, simpleTextColor;
         
-        // Definition des differents styles
+        // initializing styles
     	int appStyle = 1;
         if (appStyle == 1) {
         	titleTextSize = 20;
@@ -102,7 +103,7 @@ public class RecupSeancesAsyncTask extends AsyncTask<String, Void, Document>{
         	simpleTextColor = Color.WHITE;
         }
 
-		// Layout de la page
+		// page layout
         LinearLayout layoutListeSeances = (LinearLayout) inflatedView.findViewById(R.id.layout_liste_seances);
         layoutListeSeances.setBackgroundColor(Color.WHITE);
         layoutListeSeances.removeAllViews();
@@ -110,7 +111,7 @@ public class RecupSeancesAsyncTask extends AsyncTask<String, Void, Document>{
         Elements blocs = doc.select("div.bloc_salles_bloc");
         
 		for (Element bloc : blocs) {
-			// Layout pour chaque film
+			// layout for each show time
 			LinearLayout layoutBloc = new LinearLayout(context);
 			layoutBloc.setOrientation(LinearLayout.VERTICAL);
 			layoutBloc.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
@@ -118,18 +119,18 @@ public class RecupSeancesAsyncTask extends AsyncTask<String, Void, Document>{
 			layoutBloc.setOnClickListener(onClickListener);
 			layoutBloc.setTag(bloc.select("div.titre").first().select("a[href]").first().attr("href"));
 			
-			// Titre du film
+			// movie title
 			Element titre = bloc.select("div.titre").first(); 
             TextView twTitre = new TextView(context);
             twTitre.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-            twTitre.setTextSize(titleTextSize);
+            twTitre.setTextSize(TypedValue.COMPLEX_UNIT_SP, titleTextSize);
             twTitre.setTypeface(null, Typeface.BOLD);
             twTitre.setBackgroundColor(titleBackgroundColor);
             twTitre.setTextColor(titleTextColor);
             twTitre.setText(titre.text());
             layoutBloc.addView(twTitre);
 			
-			// Seances du film
+			// movie show time
 			Elements seances = bloc.select("ul.cine-seances li");
 			for (Element seance : seances) {
     			LinearLayout layoutSeances = new LinearLayout(context);            			
@@ -137,23 +138,23 @@ public class RecupSeancesAsyncTask extends AsyncTask<String, Void, Document>{
     			layoutSeances.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
     			layoutSeances.setBackgroundColor(Color.BLACK);
 				
-				// Version du film
+				// movie version
     			Element version = seance.select("span.cine-version").first();
 				TextView twVersion = new TextView(context);
 				twVersion.setLayoutParams(new LinearLayout.LayoutParams(100, LayoutParams.MATCH_PARENT, 0f));
-				twVersion.setTextSize(subtitleTextSize);
-				twVersion.setWidth(100);
+				twVersion.setTextSize(TypedValue.COMPLEX_UNIT_SP, subtitleTextSize);
+				twVersion.setWidth((int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, context.getResources().getDisplayMetrics()));
 				twVersion.setTypeface(null, Typeface.BOLD);
 				twVersion.setBackgroundColor(subtitleBackgroundColor);
 				twVersion.setTextColor(subtitleTextColor);
 				twVersion.setText(version.text() + " : ");
                 layoutSeances.addView(twVersion);
                 
-                // Horaire du film
+                // movie schedule
 				Element horaire = seance.select("span.cine-horaires").first();
                 TextView twHoraire = new TextView(context);
 				twHoraire.setLayoutParams(new LinearLayout.LayoutParams(0, LayoutParams.MATCH_PARENT, 1f));
-				twHoraire.setTextSize(simpleTextSize);
+				twHoraire.setTextSize(TypedValue.COMPLEX_UNIT_SP, simpleTextSize);
                 twHoraire.setTextColor(simpleTextColor);
                 twHoraire.setBackgroundColor(simpleBackgroundColor);
                 twHoraire.setGravity(Gravity.CENTER_VERTICAL);
@@ -163,44 +164,44 @@ public class RecupSeancesAsyncTask extends AsyncTask<String, Void, Document>{
 			}
 
 			
-			// Notes du film
+			// movie rates
 			Elements notes = bloc.select("li.infos_notes span"); 
 			LinearLayout layoutNotes = new LinearLayout(context);            			
 			layoutNotes.setOrientation(LinearLayout.HORIZONTAL);
 			layoutNotes.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 			layoutNotes.setBackgroundColor(Color.BLACK);
 			
-			// TextView notePresse
+			// textView for press ratings
             TextView twNotePresse = new TextView(context);
             twNotePresse.setLayoutParams(new LinearLayout.LayoutParams(0, LayoutParams.MATCH_PARENT, 1f));
             twNotePresse.setTypeface(null, Typeface.BOLD);
             twNotePresse.setBackgroundColor(subtitleBackgroundColor);
-            twNotePresse.setTextSize(subtitleTextSize);
+            twNotePresse.setTextSize(TypedValue.COMPLEX_UNIT_SP, subtitleTextSize);
             twNotePresse.setTextColor(simpleTextColor);
             twNotePresse.setText("Presse ");
             
-            // ImageView notePresse
+            // imageView for press ratings
             ImageView imNotePresse = new ImageView(context);
             imNotePresse.setLayoutParams(new LinearLayout.LayoutParams(0, LayoutParams.MATCH_PARENT, 1f));
             imNotePresse.setBackgroundColor(simpleBackgroundColor);
             
-            // TextView noteSpectateurs
+            // textView for viewers ratings
             TextView twNoteSpectateurs = new TextView(context);
             twNoteSpectateurs.setLayoutParams(new LinearLayout.LayoutParams(0, LayoutParams.MATCH_PARENT, 1f));
             twNoteSpectateurs.setTypeface(null, Typeface.BOLD);
             twNoteSpectateurs.setBackgroundColor(subtitleBackgroundColor);
-            twNoteSpectateurs.setTextSize(subtitleTextSize);
+            twNoteSpectateurs.setTextSize(TypedValue.COMPLEX_UNIT_SP, subtitleTextSize);
             twNoteSpectateurs.setTextColor(simpleTextColor);
             twNoteSpectateurs.setText("Spectateurs ");
             
-            // ImageView noteSectateurs
+            // imageView for viewers ratings
             ImageView imNoteSpectateurs = new ImageView(context);
             imNoteSpectateurs.setLayoutParams(new LinearLayout.LayoutParams(0, LayoutParams.MATCH_PARENT, 1f));
             imNoteSpectateurs.setBackgroundColor(simpleBackgroundColor);
             
 			for (Element note : notes) {
                 
-				// Note Presse
+				// press ratings
 				if (note.text().contains("Presse 1")) {
                     imNotePresse.setImageResource(R.drawable.rating_m1);
 				} 
@@ -213,7 +214,7 @@ public class RecupSeancesAsyncTask extends AsyncTask<String, Void, Document>{
 				else if (note.text().contains("Presse 4")) {
                     imNotePresse.setImageResource(R.drawable.rating_m4);
 				}
-    			// Note spectateurs
+    			// viewers ratings
 				else if (note.text().contains("Spectateurs 1")) {
                     imNoteSpectateurs.setImageResource(R.drawable.rating_m1);
 				}
