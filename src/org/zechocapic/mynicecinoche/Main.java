@@ -2,26 +2,23 @@ package org.zechocapic.mynicecinoche;
 
 import android.app.Activity;
 import android.app.FragmentTransaction;
-import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.os.Bundle;
 
 public class Main extends Activity implements SeancesFragment.OnFilmSelectedListener {
-	private final static boolean LANDSCAPE = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		// choice of orientation
-		if (LANDSCAPE) {
-			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+		// detect orientation and launch suitable layout
+		if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
 			setContentView(R.layout.main_activity_landscape);
 		} else {
-			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 			setContentView(R.layout.main_activity_portrait);
 		}
 		
-		// check activity layout and act accordingly
+		// if activity layout is portrait, launch seancesFragment manually
 		if (findViewById(R.id.fragment_container) != null) {
 			SeancesFragment seancesFragment = new SeancesFragment();
 			seancesFragment.setArguments(getIntent().getExtras());
@@ -36,10 +33,10 @@ public class Main extends Activity implements SeancesFragment.OnFilmSelectedList
 		//check if film_fragment exists
 		FilmFragment filmFragment = (FilmFragment) getFragmentManager().findFragmentById(R.id.film_fragment);
 		if (filmFragment != null) {
-			// if it exists we re in landscape, so we update film fragment
+			// if it exists we are in landscape mode, so we update film fragment
 			filmFragment.updateFilmView(link);
 		}
-		// if it does not exist we re in portrait mode, so we replace the seances_listfragment by a film_fragment
+		// if it does not exist we are in portrait mode, so we replace the seances_listfragment by a film_fragment
 		else {
 			FilmFragment newFilm = new FilmFragment();
 			Bundle args = new Bundle();
