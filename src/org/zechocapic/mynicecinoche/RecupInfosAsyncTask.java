@@ -10,6 +10,7 @@ import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
+import android.util.TypedValue;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -44,24 +45,24 @@ public class RecupInfosAsyncTask extends AsyncTask<String, Void, Document>{
 		}
 	}
 
-    // Parsing de la page web
+    // parsing web page and drawing the result
 	@Override
     protected void onPostExecute(Document doc) {
-		// Fermeture de la fenetre de chargement
+		// closing progress dialog
 		progressDialog.dismiss();
 		
-		// Toast pour gerer les cas ou la connexion est en carton
+		// toast to manage failed connection
         if(doc == null){
         	Toast.makeText(filmFragment.getActivity(), "Erreur : le chargement de la page n'aboutit pas !", Toast.LENGTH_SHORT).show();;
             return;
         }
         
-        // Variables de style
+        // style variables
         int titleTextSize, subtitleTextSize, simpleTextSize;
         int titleBackgroundColor, subtitleBackgroundColor, simpleBackgroundColor;
         int titleTextColor, subtitleTextColor, simpleTextColor;
         
-        // Definition des differents styles
+        // initializing styles
         int appStyle = 1;
         if (appStyle == 1) {
         	titleTextSize = 20;
@@ -85,37 +86,37 @@ public class RecupInfosAsyncTask extends AsyncTask<String, Void, Document>{
         	simpleTextColor = Color.WHITE;
         }
         
-		// Bloc du film
+		// page layout
         LinearLayout linearLayout = (LinearLayout) filmFragment.getActivity().findViewById(R.id.layout_film);
         linearLayout.setBackgroundColor(Color.WHITE);
         linearLayout.setPadding(5, 5, 5, 5);
         linearLayout.removeAllViews();
         
-        // TextView du titre
+		// movie title
 		Element titre = doc.select("div.bloc_rub_titre").first();
         TextView twTitre = new TextView(filmFragment.getActivity());
         twTitre.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
         twTitre.setBackgroundColor(titleBackgroundColor);
-        twTitre.setTextSize(titleTextSize);
+        twTitre.setTextSize(TypedValue.COMPLEX_UNIT_SP, titleTextSize);
         twTitre.setTypeface(null, Typeface.BOLD);
         twTitre.setTextColor(titleTextColor);
         twTitre.setText(titre.text());
         linearLayout.addView(twTitre);
 		
-		// Layout horizontal contenant affiche et infos
+		// horizontal layout containing poster and info
         LinearLayout layoutAfficheInfos = new LinearLayout(filmFragment.getActivity());            			
         layoutAfficheInfos.setOrientation(LinearLayout.HORIZONTAL);
         layoutAfficheInfos.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
         layoutAfficheInfos.setBackgroundColor(Color.BLACK);
 		
-		// ImageView affiche
+		// imageView for poster
 		Element affiche = doc.select("div.visuel img[src]").first();
 		ImageView imAffiche = new ImageView(filmFragment.getActivity());
 		imAffiche.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 0f));
 		layoutAfficheInfos.addView(imAffiche);
         new RecupImageAsyncTask(imAffiche).execute(affiche.attr("src"));
         
-        // Textview date de sortie
+        // textView for published date 
         Element genre = doc.select("div.infos [itemprop=genre]").first();
         Element dateSortie = doc.select("div.infos [itemprop=datePublished]").first();
         Element realisateur = doc.select("div.infos [itemprop=director] [itemprop=name]").first();
@@ -124,7 +125,7 @@ public class RecupInfosAsyncTask extends AsyncTask<String, Void, Document>{
         TextView twInfosDiverses = new TextView(filmFragment.getActivity());
         twInfosDiverses.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, 1f));
         twInfosDiverses.setBackgroundColor(simpleBackgroundColor);
-        twInfosDiverses.setTextSize(simpleTextSize);
+        twInfosDiverses.setTextSize(TypedValue.COMPLEX_UNIT_SP, simpleTextSize);
         twInfosDiverses.setTextColor(simpleTextColor);
         twInfosDiverses.setText("Genre : " + genre.text() + "\n" +
         		"Date de sortie : " + dateSortie.text() + "\n" +
@@ -134,22 +135,21 @@ public class RecupInfosAsyncTask extends AsyncTask<String, Void, Document>{
         layoutAfficheInfos.addView(twInfosDiverses);
         
         linearLayout.addView(layoutAfficheInfos);
-
         
-        // Cadre Synopsis
+        // picture frame for Synopsis
 		TextView twCadreSynopsis = new TextView(filmFragment.getActivity());
 		twCadreSynopsis.setTypeface(null, Typeface.BOLD_ITALIC);
 		twCadreSynopsis.setBackgroundColor(subtitleBackgroundColor);
-		twCadreSynopsis.setTextSize(subtitleTextSize);
+		twCadreSynopsis.setTextSize(TypedValue.COMPLEX_UNIT_SP, subtitleTextSize);
 		twCadreSynopsis.setTextColor(subtitleTextColor);
 		twCadreSynopsis.setText("Synopsis");
 		linearLayout.addView(twCadreSynopsis);
 		
-		// TextView du synopsis
+		// textView for synopsis
 		Element description = doc.select("div.description_cnt").first();
         TextView twDesc = new TextView(filmFragment.getActivity());
         twDesc.setBackgroundColor(simpleBackgroundColor);
-        twDesc.setTextSize(simpleTextSize);
+        twDesc.setTextSize(TypedValue.COMPLEX_UNIT_SP, simpleTextSize);
         twDesc.setTextColor(simpleTextColor);
         twDesc.setText(description.text());
         linearLayout.addView(twDesc);
